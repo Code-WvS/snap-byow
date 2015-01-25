@@ -615,6 +615,32 @@ SnapTranslator.dict.de = {
     'replace item %idx of %l with %s':
         'ersetze Element %idx in %l durch %s',
 
+    // BYOW player
+    'Player':
+        'Spieler',
+    'move x %n y %n z %n':
+        'bewege um x %n y %n z %n',
+    'move to x %n y %n z %n':
+        'bewege zu x %n y %n z %n',
+    'position':
+        'Position',
+    'set point of view to %s':
+        'setze Ansicht auf %s',
+    'toggle view':
+        'schalte Ansicht um',
+    'set rotation to x %n y %n z %n':
+        'setze Drehung auf x %n y %n z %n',
+    'get rotation':
+        'Drehung',
+
+    // BYOW world
+    'World':
+        'Welt',
+    'set block at x %n y %n z %n material %n':
+        'setze Block bei x %n y %n z %n Material %n',
+    'get block at x %n y %n z %n':
+        'Material des Blocks bei x %n y %n z %n',
+
     // other
     'Make a block':
         'Neuer Block',

@@ -1,0 +1,19 @@
+{
+    "name": "snap-byow",
+    "version": "0.1.0",
+     "dependencies": {
+         "voxel": "0.4.0",
+         "voxel-engine": "0.20.1",
+         "voxel-highlight": "0.0.10",
+         "voxel-player": "0.1.0",
+         "voxel-fly": "0.1.2",
+         "voxel-walk": "0.0.5"
+     },
+     "devDependencies": {
+         "browserify": "8.1.1",
+         "beefy": "2.1.2"
+     },
+     "scripts": {
+         "start": "beefy test.js:bundle.js 8000"
+     }
+}

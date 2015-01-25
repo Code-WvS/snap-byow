@@ -155,21 +155,20 @@ SpriteMorph.uber = PenMorph.prototype;
 
 SpriteMorph.prototype.categories =
     [
-        'motion',
+        'player',
         'control',
-        'looks',
+        'world',
         'sensing',
         'sound',
         'operators',
-        'pen',
         'variables',
         'lists',
         'other'
     ];
 
 SpriteMorph.prototype.blockColor = {
-    motion : new Color(74, 108, 212),
-    looks : new Color(143, 86, 227),
+    player: new Color(74, 108, 212),
+    world: new Color(143, 86, 227),
     sound : new Color(207, 74, 217),
     pen : new Color(0, 161, 120),
     control : new Color(230, 168, 34),
@@ -177,7 +176,7 @@ SpriteMorph.prototype.blockColor = {
     operators : new Color(98, 194, 19),
     variables : new Color(243, 118, 29),
     lists : new Color(217, 77, 17),
-    other: new Color(150, 150, 150)
+    other: new Color(150, 150, 150),
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
@@ -203,7 +202,7 @@ SpriteMorph.prototype.initBlocks = function () {
     SpriteMorph.prototype.blocks = {
 
         // Motion
-        forward: {
+        /*forward: {
             only: SpriteMorph,
             type: 'command',
             category: 'motion',
@@ -441,7 +440,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'looks',
             spec: 'console log %mult%s'
-        },
+        }, */
 
         // Sound
         playSound: {
@@ -1186,6 +1185,60 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'reporter',
             category: 'other',
             spec: 'code of %cmdRing'
+        },
+
+        /* Snap! - Build Your Own World blocks */
+        playerMove: {
+            only: SpriteMorph,
+            type: 'command',
+            category: 'player',
+            spec: 'move x %n y %n z %n'
+        },
+        playerMoveTo: {
+            only: SpriteMorph,
+            type: 'command',
+            category: 'player',
+            spec: 'move to x %n y %n z %n'
+        },
+        getPlayerPosition: {
+            only: SpriteMorph,
+            type: 'reporter',
+            category: 'player',
+            spec: 'position'
+        },
+        playerPOV: {
+            only: SpriteMorph,
+            type: 'command',
+            category: 'player',
+            spec: 'set point of view to %s' // TODO
+        },
+        playerTogglePOV: {
+            only: SpriteMorph,
+            type: 'command',
+            category: 'player',
+            spec: 'toggle view'
+        },
+        setPlayerRotation: {
+            only: SpriteMorph,
+            type: 'command',
+            category: 'player',
+            spec: 'set rotation to x %n y %n z %n'
+        },
+        getPlayerRotation: {
+            only: SpriteMorph,
+            type: 'command',
+            category: 'player',
+            spec: 'get rotation'
+        },
+        worldSetBlock: {
+            type: 'command',
+            category: 'world',
+            spec: 'set block at x %n y %n z %n material %n'
+        },
+        worldGetBlock: {
+            type: 'reporter',
+            category: 'world',
+            spec: 'get block at x %n y %n z %n'
         }
     };
 };
@@ -1626,7 +1679,7 @@ SpriteMorph.prototype.variableBlock = function (varName) {
 
 SpriteMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
-        cat = category || 'motion', txt;
+        cat = category || 'player', txt;
 
     function block(selector) {
         if (StageMorph.prototype.hiddenPrimitives[selector]) {
@@ -2128,6 +2181,23 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         button.selector = 'addCustomBlock';
         button.showHelp = BlockMorph.prototype.showHelp;
         blocks.push(button);
+    } else if (cat == 'player') {
+
+        blocks.push(block('playerMove'));
+        blocks.push(block('playerMoveTo'));
+        blocks.push(block('getPlayerPosition'));
+        blocks.push('=');
+        blocks.push(block('playerPOV'));
+        blocks.push(block('playerTogglePOV'));
+        blocks.push('=');
+        blocks.push(block('setPlayerRotation'));
+        blocks.push(block('getPlayerRotation'));
+
+    } else if (cat == 'world') {
+
+        blocks.push(block('worldSetBlock'));
+        blocks.push(block('worldGetBlock'));
+
     }
     return blocks;
 };
@@ -4865,11 +4935,64 @@ StageMorph.prototype.removeAllClones = function () {
     this.cloneCount = 0;
 };
 
+StageMorph.prototype.playerMove = function (deltaX, deltaY, deltaZ) {
+    var player = window.gamePlayer;
+    player.move(deltaX, deltaY, deltaZ);
+};
+
+StageMorph.prototype.playerMoveTo = function (posX, posY, posZ) {
+    var player = window.gamePlayer;
+    player.moveTo(posX, posY, posZ);
+};
+
+StageMorph.prototype.getPlayerPosition = function () {
+    var game = window.game;
+    var vecPos = game.controls.target().avatar.position;
+    return [vecPos.x, vecPos.y, vecPos.z];
+};
+
+StageMorph.prototype.playerPOV = function (mode) { // TODO
+    var player = window.gamePlayer;
+    if (mode == 'first' || mode == 'third') {
+        player.pov(mode);
+    } else {
+        throw new Error('Must be either "first" or "third"!');
+    }
+};
+
+StageMorph.prototype.playerTogglePOV = function () {
+    var player = window.gamePlayer;
+    player.toggle();
+};
+
+StageMorph.prototype.setPlayerRotation = function (posX, posY, posZ) {
+    var world = window.game;
+    world.controls.target().avatar.rotation.set(posX, posY, posZ);
+};
+
+StageMorph.prototype.getPlayerRotation = function () {
+    var world = window.game;
+    var vecRotation = world.controls.target().avatar.rotation;
+    return [vecRotation.x, vecRotation.y, vecRotation.z];
+};
+
+StageMorph.prototype.worldSetBlock = function (posX, posY, posZ, material) {
+    var world = window.game;
+    var pos = [posX, posY, posZ];
+    world.setBlock(pos, material);
+};
+
+StageMorph.prototype.worldGetBlock = function (posX, posY, posZ) {
+    var world = window.game;
+    var pos = [posX, posY, posZ];
+    world.getBlock(pos);
+};
+
 // StageMorph block templates
 
 StageMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
-        cat = category || 'motion', txt;
+        cat = category || 'player', txt;
 
     function block(selector) {
         if (myself.hiddenPrimitives[selector]) {
@@ -5303,6 +5426,13 @@ StageMorph.prototype.blockTemplates = function (category) {
             'Make a block'
         );
         blocks.push(button);
+    } else if (cat == 'player') {
+
+    } else if (cat == 'world') {
+
+        blocks.push(block('worldSetBlock'));
+        blocks.push(block('worldGetBlock'));
+
     }
     return blocks;
 };

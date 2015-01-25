@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Snap! Build Your Own Blocks. Beta</title>
+		<title>Snap! Build Your Own World. Alpha</title>
 		<link rel="shortcut icon" href="favicon.ico">
 		<script type="text/javascript" src="morphic.js"></script>
 		<script type="text/javascript" src="widgets.js"></script>
@@ -17,21 +17,47 @@
 		<script type="text/javascript" src="store.js"></script>
 		<script type="text/javascript" src="locale.js"></script>
 		<script type="text/javascript" src="cloud.js"></script>
-		<script type="text/javascript" src="sha512.js"></script>
+                <script type="text/javascript" src="sha512.js"></script>
+
+
 		<script type="text/javascript">
 			var world;
 			window.onload = function () {
 				world = new WorldMorph(document.getElementById('world'));
-                world.worldCanvas.focus();
-				new IDE_Morph().openIn(world);
-				setInterval(loop, 1);
+                                world.worldCanvas.focus();
+				var ide = new IDE_Morph().openIn(world);
+				setInterval(loop, 10);
+
+                                document.onkeydown = function (e) { // exit appMode if the user exits the voxel window
+                                    e = e || window.event;
+                                    if (e.keyCode == 27) {
+                                        if (world.children[0].isAppMode) {
+                                            world.children[0].toggleAppMode()
+                                        }
+                                    }
+                                }
 			};
 			function loop() {
 				world.doOneCycle();
+                                // copy the rendered frame to stage
+                                var stage = world.children[0].stage;
+                                var gameCanvas = window.gameWorld.children[0];
+                                var context = stage.trailsCanvas.getContext('2d');
+
+                                // Force view to stage size TODO
+                                if (stage.isAppMode == false) {
+                                    game.view.resizeWindow(stage.trailsCanvas.width, stage.trailsCanvas.height);
+                                }
+
+                                context.drawImage(gameCanvas, 0, 0, stage.trailsCanvas.width, stage.trailsCanvas.height);
+                                stage.changed();
 			}
 		</script>
 	</head>
 	<body style="margin: 0;">
+                <script type="text/javascript" src="bundle.js"></script>
 		<canvas id="world" tabindex="1" style="position: absolute;" />
 	</body>
+        <body>
+        </body>
 </html>

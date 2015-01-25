@@ -212,7 +212,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
     this.sprites = new List([this.currentSprite]);
-    this.currentCategory = 'motion';
+    this.currentCategory = 'player';
     this.currentTab = 'scripts';
     this.projectName = '';
     this.projectNotes = '';
@@ -3370,6 +3370,21 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         }
     }
     this.setExtent(this.world().extent()); // resume trackChanges
+
+    /* BYOW changes */
+    if (this.isAppMode) {
+        document.body.appendChild(window.gameWorld);
+        document.getElementById('world').style.display = 'none';
+    } else {
+        for (j = 0; j < document.body.children.length; j++) {
+            // TODO refactor
+            if (document.body.children[j] == window.gameWorld) {
+                document.body.removeChild(window.gameWorld);
+                break;
+            }
+        }
+        document.getElementById('world').style.display = null;
+    }
 };
 
 IDE_Morph.prototype.toggleStageSize = function (isSmall) {
