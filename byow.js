@@ -1,16 +1,34 @@
-var createGame = require('voxel-engine');
-var highlight = require('voxel-highlight');
-var player = require('voxel-player');
-var voxel = require('voxel');
-var fly = require('voxel-fly');
-var walk = require('voxel-walk');
+window.createGame = require('voxel-engine');
+window.highlight = require('voxel-highlight');
+window.player = require('voxel-player');
+window.voxel = require('voxel');
+window.fly = require('voxel-fly');
+window.walk = require('voxel-walk');
+window.skin = require('minecraft-skin');
 
 function generator(x, y, z) {
     return y === 1 ? 1 : 0;
 }
 
 module.exports = function(setup) {
-    setup = setup || defaultSetup;
+    function generator(x, y, z) {
+        return y === 1 ? 1 : 0;
+    }
+
+    // BYOW changes
+    var options = {
+        generate: generator,
+        chunkDistance: 2
+    };
+    window.game = createGame(options);
+    window.gameWorld = document.createElement('div');
+    window.game.appendTo(window.gameWorld);
+    window.createPlayer = window.player(window.game);
+    window.gamePlayer = createPlayer('greg.png');
+    window.gamePlayer.possess();
+    window.gamePlayer.yaw.position.set(2, 14, 4);
+    defaultSetup(window.game, window.gamePlayer);
+    /*
     var options = {
         generate: generator,//voxel.generator['Valley'],
         chunkDistance: 2
@@ -24,14 +42,16 @@ module.exports = function(setup) {
     if (game.notCapable()) return game;
     var createPlayer = player(game);
 
-    var activeplayer = createPlayer('player.png');
+    var activeplayer = createPlayer('greg.png');
+    window.createPlayer = createPlayer;
     window.gamePlayer = activeplayer;
     activeplayer.possess();
     activeplayer.yaw.position.set(2, 14, 4);
 
-    setup(game, activeplayer);
+    defaultSetup(game, activeplayer);
 
     return game;
+    */
 };
 
 function defaultSetup(game, avatar) {

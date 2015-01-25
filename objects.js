@@ -1189,43 +1189,38 @@ SpriteMorph.prototype.initBlocks = function () {
 
         /* Snap! - Build Your Own World blocks */
         playerMove: {
-            only: SpriteMorph,
             type: 'command',
             category: 'player',
             spec: 'move x %n y %n z %n'
         },
         playerMoveTo: {
-            only: SpriteMorph,
             type: 'command',
             category: 'player',
             spec: 'move to x %n y %n z %n'
         },
         getPlayerPosition: {
-            only: SpriteMorph,
             type: 'reporter',
             category: 'player',
             spec: 'position'
         },
         playerPOV: {
-            only: SpriteMorph,
+            only: StageMorph,
             type: 'command',
             category: 'player',
             spec: 'set point of view to %s' // TODO
         },
         playerTogglePOV: {
-            only: SpriteMorph,
+            only: StageMorph,
             type: 'command',
             category: 'player',
             spec: 'toggle view'
         },
         setPlayerRotation: {
-            only: SpriteMorph,
             type: 'command',
             category: 'player',
             spec: 'set rotation to x %n y %n z %n'
         },
         getPlayerRotation: {
-            only: SpriteMorph,
             type: 'command',
             category: 'player',
             spec: 'get rotation'
@@ -1398,6 +1393,28 @@ SpriteMorph.prototype.init = function (globals) {
     this.changed();
     this.drawNew();
     this.changed();
+
+    // BYOW changes
+    var playerSkin = window.skin(window.game.THREE, 'player.png',
+         {scale: new window.game.THREE.Vector3(0.04, 0.04, 0.04)});
+    var player = playerSkin.mesh;
+    var physics = window.game.makePhysical(player);
+    physics.playerSkin = playerSkin;
+
+    player.position.set(0, 2, 0);
+
+    window.game.scene.add(player);
+    window.game.addItem(physics);
+
+    physics.yaw = player;
+    physics.pitch = player.head;
+    physics.subjectTo(window.game.gravity);
+    physics.blocksCreation = true;
+
+    this.player = physics;
+    console.log("Player created");//DEBUG
+    console.log(this.name);
+    console.log(globals);
 };
 
 // SpriteMorph duplicating (fullCopy)
@@ -2187,9 +2204,6 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('playerMove'));
         blocks.push(block('playerMoveTo'));
         blocks.push(block('getPlayerPosition'));
-        blocks.push('=');
-        blocks.push(block('playerPOV'));
-        blocks.push(block('playerTogglePOV'));
         blocks.push('=');
         blocks.push(block('setPlayerRotation'));
         blocks.push(block('getPlayerRotation'));
@@ -4317,6 +4331,56 @@ SpriteMorph.prototype.doScreenshot = function (imgSource, data) {
     this.addCostume(costume);
 };
 
+SpriteMorph.prototype.playerMove = function (deltaX, deltaY, deltaZ) {
+    this.player.yaw.position.x += deltaX;
+    this.player.yaw.position.y += deltaY;
+    this.player.yaw.position.z += deltaZ;
+};
+
+SpriteMorph.prototype.playerMoveTo = function (posX, posY, posZ) {
+    this.player.yaw.position.x = posX;
+    this.player.yaw.position.y = posY;
+    this.player.yaw.position.z = posZ;
+};
+
+SpriteMorph.prototype.getPlayerPosition = function () {
+    var vecPos = this.player.avatar.position;
+    return [vecPos.x, vecPos.y, vecPos.z];
+};
+
+SpriteMorph.prototype.playerPOV = function (mode) { // TODO
+    if (mode == 'first' || mode == 'third') {
+        this.player.pov(mode);
+    } else {
+        throw new Error('Must be either "first" or "third"!');
+    }
+};
+
+SpriteMorph.prototype.playerTogglePOV = function () {
+    this.player.toggle();
+};
+
+SpriteMorph.prototype.setPlayerRotation = function (posX, posY, posZ) {
+    this.player.avatar.rotation.set(posX, posY, posZ);
+};
+
+SpriteMorph.prototype.getPlayerRotation = function () {
+    var vecRotation = this.player.avatar.rotation;
+    return [vecRotation.x, vecRotation.y, vecRotation.z];
+};
+
+SpriteMorph.prototype.worldSetBlock = function (posX, posY, posZ, material) {
+    var world = window.game;
+    var pos = [posX, posY, posZ];
+    world.setBlock(pos, material);
+};
+
+SpriteMorph.prototype.worldGetBlock = function (posX, posY, posZ) {
+    var world = window.game;
+    var pos = [posX, posY, posZ];
+    world.getBlock(pos);
+};
+
 // SpriteHighlightMorph /////////////////////////////////////////////////
 
 // SpriteHighlightMorph inherits from Morph:
@@ -4418,6 +4482,9 @@ StageMorph.prototype.init = function (globals) {
     this.acceptsDrops = false;
     this.setColor(new Color(255, 255, 255));
     this.fps = this.frameRate;
+
+    this.player = window.gamePlayer;
+    this.player.possess();
 };
 
 // StageMorph scaling
@@ -4936,58 +5003,32 @@ StageMorph.prototype.removeAllClones = function () {
     this.cloneCount = 0;
 };
 
-StageMorph.prototype.playerMove = function (deltaX, deltaY, deltaZ) {
-    var player = window.gamePlayer;
-    player.move(deltaX, deltaY, deltaZ);
-};
+StageMorph.prototype.playerMove 
+    = SpriteMorph.prototype.playerMove;
 
-StageMorph.prototype.playerMoveTo = function (posX, posY, posZ) {
-    var player = window.gamePlayer;
-    player.moveTo(posX, posY, posZ);
-};
+StageMorph.prototype.playerMoveTo
+    = SpriteMorph.prototype.playerMoveTo;
 
-StageMorph.prototype.getPlayerPosition = function () {
-    var game = window.game;
-    var vecPos = game.controls.target().avatar.position;
-    return [vecPos.x, vecPos.y, vecPos.z];
-};
+StageMorph.prototype.getPlayerPosition
+    = SpriteMorph.prototype.getPlayerPosition;
 
-StageMorph.prototype.playerPOV = function (mode) { // TODO
-    var player = window.gamePlayer;
-    if (mode == 'first' || mode == 'third') {
-        player.pov(mode);
-    } else {
-        throw new Error('Must be either "first" or "third"!');
-    }
-};
+StageMorph.prototype.playerPOV
+    = SpriteMorph.prototype.playerPOV;
 
-StageMorph.prototype.playerTogglePOV = function () {
-    var player = window.gamePlayer;
-    player.toggle();
-};
+StageMorph.prototype.playerTogglePOV
+    = SpriteMorph.prototype.playerTogglePOV;
 
-StageMorph.prototype.setPlayerRotation = function (posX, posY, posZ) {
-    var world = window.game;
-    world.controls.target().avatar.rotation.set(posX, posY, posZ);
-};
+StageMorph.prototype.setPlayerRotation
+    = SpriteMorph.prototype.setPlayerRotation;
 
-StageMorph.prototype.getPlayerRotation = function () {
-    var world = window.game;
-    var vecRotation = world.controls.target().avatar.rotation;
-    return [vecRotation.x, vecRotation.y, vecRotation.z];
-};
+StageMorph.prototype.getPlayerRotation
+    = SpriteMorph.prototype.getPlayerRotation;
 
-StageMorph.prototype.worldSetBlock = function (posX, posY, posZ, material) {
-    var world = window.game;
-    var pos = [posX, posY, posZ];
-    world.setBlock(pos, material);
-};
+StageMorph.prototype.worldSetBlock
+    = SpriteMorph.prototype.worldSetBlock;
 
-StageMorph.prototype.worldGetBlock = function (posX, posY, posZ) {
-    var world = window.game;
-    var pos = [posX, posY, posZ];
-    world.getBlock(pos);
-};
+StageMorph.prototype.worldGetBlock
+    = SpriteMorph.prototype.worldGetBlock;
 
 // StageMorph block templates
 
@@ -5428,6 +5469,16 @@ StageMorph.prototype.blockTemplates = function (category) {
         );
         blocks.push(button);
     } else if (cat == 'player') {
+
+        blocks.push(block('playerMove'));
+        blocks.push(block('playerMoveTo'));
+        blocks.push(block('getPlayerPosition'));
+        blocks.push('=');
+        blocks.push(block('playerPOV'));
+        blocks.push(block('playerTogglePOV'));
+        blocks.push('=');
+        blocks.push(block('setPlayerRotation'));
+        blocks.push(block('getPlayerRotation'));
 
     } else if (cat == 'world') {
 
