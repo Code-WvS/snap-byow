@@ -1243,6 +1243,19 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             );
             break;
 
+    // Build Your Own World changes
+        case '%pointOfView':
+            part = new InputSlotMorph(
+                null,
+                false,
+                {
+                    'first' : ['first'],
+                    'third' : ['third']
+                },
+                true
+            );
+            break;
+
     // symbols:
 
         case '%turtle':

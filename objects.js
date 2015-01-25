@@ -1207,7 +1207,7 @@ SpriteMorph.prototype.initBlocks = function () {
             only: StageMorph,
             type: 'command',
             category: 'player',
-            spec: 'set point of view to %s' // TODO
+            spec: 'set point of view to %pointOfView'
         },
         playerTogglePOV: {
             only: StageMorph,
@@ -1412,9 +1412,6 @@ SpriteMorph.prototype.init = function (globals) {
     physics.blocksCreation = true;
 
     this.player = physics;
-    console.log("Player created");//DEBUG
-    console.log(this.name);
-    console.log(globals);
 };
 
 // SpriteMorph duplicating (fullCopy)
@@ -4348,12 +4345,9 @@ SpriteMorph.prototype.getPlayerPosition = function () {
     return [vecPos.x, vecPos.y, vecPos.z];
 };
 
-SpriteMorph.prototype.playerPOV = function (mode) { // TODO
-    if (mode == 'first' || mode == 'third') {
-        this.player.pov(mode);
-    } else {
-        throw new Error('Must be either "first" or "third"!');
-    }
+SpriteMorph.prototype.playerPOV = function (modefn) {
+    var mode = modefn[0];
+    this.player.pov(mode);
 };
 
 SpriteMorph.prototype.playerTogglePOV = function () {

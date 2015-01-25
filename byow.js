@@ -6,54 +6,6 @@ window.fly = require('voxel-fly');
 window.walk = require('voxel-walk');
 window.skin = require('minecraft-skin');
 
-function generator(x, y, z) {
-    return y === 1 ? 1 : 0;
-}
-
-module.exports = function(setup) {
-    function generator(x, y, z) {
-        return y === 1 ? 1 : 0;
-    }
-
-    // BYOW changes
-    var options = {
-        generate: generator,
-        chunkDistance: 2
-    };
-    window.game = createGame(options);
-    window.gameWorld = document.createElement('div');
-    window.game.appendTo(window.gameWorld);
-    window.createPlayer = window.player(window.game);
-    window.gamePlayer = createPlayer('greg.png');
-    window.gamePlayer.possess();
-    window.gamePlayer.yaw.position.set(2, 14, 4);
-    defaultSetup(window.game, window.gamePlayer);
-    /*
-    var options = {
-        generate: generator,//voxel.generator['Valley'],
-        chunkDistance: 2
-    };
-    // setup the game and add some trees
-    var game = createGame(options);
-    window.game = game;
-    gameWorld = document.createElement('div');
-    game.appendTo(gameWorld);
-    window.gameWorld = gameWorld;
-    if (game.notCapable()) return game;
-    var createPlayer = player(game);
-
-    var activeplayer = createPlayer('greg.png');
-    window.createPlayer = createPlayer;
-    window.gamePlayer = activeplayer;
-    activeplayer.possess();
-    activeplayer.yaw.position.set(2, 14, 4);
-
-    defaultSetup(game, activeplayer);
-
-    return game;
-    */
-};
-
 function defaultSetup(game, avatar) {
     var makeFly = fly(game);
     var target = game.controls.target();
@@ -89,3 +41,23 @@ function defaultSetup(game, avatar) {
         else walk.startWalking();
     });
 }
+window.initGame = function() {
+    function generator(x, y, z) {
+        return y === 1 ? 1 : 0;
+    }
+
+    var options = {
+        generate: generator,
+        chunkDistance: 2
+    };
+    window.game = createGame(options);
+    window.gameWorld = document.createElement('div');
+    window.game.appendTo(window.gameWorld);
+    window.createPlayer = window.player(window.game);
+    window.gamePlayer = createPlayer('greg.png');
+    window.gamePlayer.possess();
+    window.gamePlayer.yaw.position.set(2, 14, 4);
+    defaultSetup(window.game, window.gamePlayer);
+};
+
+module.exports = window.initGame;
