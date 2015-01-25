@@ -1393,6 +1393,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.isDraggable = true;
     this.isDown = false;
 
+    this.hide(); // BYOW hack FIXME
     this.heading = 90;
     this.changed();
     this.drawNew();
