@@ -1234,6 +1234,11 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'reporter',
             category: 'world',
             spec: 'get block at x %n y %n z %n'
+        },
+        worldReset: {
+            type: 'command',
+            category: 'world',
+            spec: 'reset world'
         }
     };
 };
@@ -1770,82 +1775,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         }
     }
 
-    if (cat === 'motion') {
-
-        blocks.push(block('forward'));
-        blocks.push(block('turn'));
-        blocks.push(block('turnLeft'));
-        blocks.push('-');
-        blocks.push(block('setHeading'));
-        blocks.push(block('doFaceTowards'));
-        blocks.push('-');
-        blocks.push(block('gotoXY'));
-        blocks.push(block('doGotoObject'));
-        blocks.push(block('doGlide'));
-        blocks.push('-');
-        blocks.push(block('changeXPosition'));
-        blocks.push(block('setXPosition'));
-        blocks.push(block('changeYPosition'));
-        blocks.push(block('setYPosition'));
-        blocks.push('-');
-        blocks.push(block('bounceOffEdge'));
-        blocks.push('-');
-        blocks.push(watcherToggle('xPosition'));
-        blocks.push(block('xPosition'));
-        blocks.push(watcherToggle('yPosition'));
-        blocks.push(block('yPosition'));
-        blocks.push(watcherToggle('direction'));
-        blocks.push(block('direction'));
-
-    } else if (cat === 'looks') {
-
-        blocks.push(block('doSwitchToCostume'));
-        blocks.push(block('doWearNextCostume'));
-        blocks.push(watcherToggle('getCostumeIdx'));
-        blocks.push(block('getCostumeIdx'));
-        blocks.push('-');
-        blocks.push(block('doSayFor'));
-        blocks.push(block('bubble'));
-        blocks.push(block('doThinkFor'));
-        blocks.push(block('doThink'));
-        blocks.push('-');
-        blocks.push(block('changeEffect'));
-        blocks.push(block('setEffect'));
-        blocks.push(block('clearEffects'));
-        blocks.push('-');
-        blocks.push(block('changeScale'));
-        blocks.push(block('setScale'));
-        blocks.push(watcherToggle('getScale'));
-        blocks.push(block('getScale'));
-        blocks.push('-');
-        blocks.push(block('show'));
-        blocks.push(block('hide'));
-        blocks.push('-');
-        blocks.push(block('comeToFront'));
-        blocks.push(block('goBack'));
-
-    // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-            blocks.push('-');
-            txt = new TextMorph(localize(
-                'development mode \ndebugging primitives:'
-            ));
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('reportCostumes'));
-            blocks.push('-');
-            blocks.push(block('log'));
-            blocks.push(block('alert'));
-            blocks.push('-');
-            blocks.push(block('doScreenshot'));
-        }
-
-    /////////////////////////////////
-
-    } else if (cat === 'sound') {
+    if (cat === 'sound') {
 
         blocks.push(block('playSound'));
         blocks.push(block('doPlaySoundUntilDone'));
@@ -1874,30 +1804,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('reportSounds'));
         }
 
-    } else if (cat === 'pen') {
-
-        blocks.push(block('clear'));
-        blocks.push('-');
-        blocks.push(block('down'));
-        blocks.push(block('up'));
-        blocks.push('-');
-        blocks.push(block('setColor'));
-        blocks.push(block('changeHue'));
-        blocks.push(block('setHue'));
-        blocks.push('-');
-        blocks.push(block('changeBrightness'));
-        blocks.push(block('setBrightness'));
-        blocks.push('-');
-        blocks.push(block('changeSize'));
-        blocks.push(block('setSize'));
-        blocks.push('-');
-        blocks.push(block('doStamp'));
-
     } else if (cat === 'control') {
 
         blocks.push(block('receiveGo'));
-        blocks.push(block('receiveKey'));
-        blocks.push(block('receiveClick'));
         blocks.push(block('receiveMessage'));
         blocks.push('-');
         blocks.push(block('doBroadcast'));
@@ -2209,6 +2118,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         blocks.push(block('worldSetBlock'));
         blocks.push(block('worldGetBlock'));
+        blocks.push(block('worldReset'));
 
     }
     return blocks;
@@ -4329,15 +4239,15 @@ SpriteMorph.prototype.doScreenshot = function (imgSource, data) {
 };
 
 SpriteMorph.prototype.playerMove = function (deltaX, deltaY, deltaZ) {
-    this.player.yaw.position.x += deltaX.toFixed(2);
-    this.player.yaw.position.y += deltaY.toFixed(2);
-    this.player.yaw.position.z += deltaZ.toFixed(2);
+    this.player.yaw.position.x += Math.round(deltaX * 100) / 100;
+    this.player.yaw.position.y += Math.round(deltaY * 100) / 100;
+    this.player.yaw.position.z += Math.round(deltaZ * 100) / 100;
 };
 
 SpriteMorph.prototype.playerMoveTo = function (posX, posY, posZ) {
-    this.player.yaw.position.x = posX.toFixed(2);
-    this.player.yaw.position.y = posY.toFixed(2);
-    this.player.yaw.position.z = posZ.toFixed(2);
+    this.player.yaw.position.x = Math.round(posX * 100) / 100;
+    this.player.yaw.position.y = Math.round(posY * 100) / 100;
+    this.player.yaw.position.z = Math.round(posZ * 100) / 100;
 };
 
 SpriteMorph.prototype.getPlayerPosition = function () {
@@ -4373,6 +4283,10 @@ SpriteMorph.prototype.worldGetBlock = function (posX, posY, posZ) {
     var world = window.game;
     var pos = [posX, posY, posZ];
     world.getBlock(pos);
+};
+
+SpriteMorph.prototype.worldReset = function () {
+    window.initGame();
 };
 
 // SpriteHighlightMorph /////////////////////////////////////////////////
@@ -5024,6 +4938,9 @@ StageMorph.prototype.worldSetBlock
 StageMorph.prototype.worldGetBlock
     = SpriteMorph.prototype.worldGetBlock;
 
+StageMorph.prototype.worldReset
+    = SpriteMorph.prototype.worldReset;
+
 // StageMorph block templates
 
 StageMorph.prototype.blockTemplates = function (category) {
@@ -5098,51 +5015,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         }
     }
 
-    if (cat === 'motion') {
-
-        txt = new TextMorph(localize(
-            'Stage selected:\nno motion primitives'
-        ));
-        txt.fontSize = 9;
-        txt.setColor(this.paletteTextColor);
-        blocks.push(txt);
-
-    } else if (cat === 'looks') {
-
-        blocks.push(block('doSwitchToCostume'));
-        blocks.push(block('doWearNextCostume'));
-        blocks.push(watcherToggle('getCostumeIdx'));
-        blocks.push(block('getCostumeIdx'));
-        blocks.push('-');
-        blocks.push(block('changeEffect'));
-        blocks.push(block('setEffect'));
-        blocks.push(block('clearEffects'));
-        blocks.push('-');
-        blocks.push(block('show'));
-        blocks.push(block('hide'));
-
-    // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-            blocks.push('-');
-            txt = new TextMorph(localize(
-                'development mode \ndebugging primitives:'
-            ));
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('reportCostumes'));
-            blocks.push('-');
-            blocks.push(block('log'));
-            blocks.push(block('alert'));
-            blocks.push('-');
-            blocks.push(block('doScreenshot'));
-        }
-
-    /////////////////////////////////
-
-    } else if (cat === 'sound') {
+    if (cat === 'sound') {
 
         blocks.push(block('playSound'));
         blocks.push(block('doPlaySoundUntilDone'));
@@ -5171,15 +5044,9 @@ StageMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('reportSounds'));
         }
 
-    } else if (cat === 'pen') {
-
-        blocks.push(block('clear'));
-
-    } else if (cat === 'control') {
+    }  if (cat === 'control') {
 
         blocks.push(block('receiveGo'));
-        blocks.push(block('receiveKey'));
-        blocks.push(block('receiveClick'));
         blocks.push(block('receiveMessage'));
         blocks.push('-');
         blocks.push(block('doBroadcast'));
@@ -5230,10 +5097,6 @@ StageMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'sensing') {
 
-        blocks.push(block('doAsk'));
-        blocks.push(watcherToggle('getLastAnswer'));
-        blocks.push(block('getLastAnswer'));
-        blocks.push('-');
         blocks.push(watcherToggle('reportMouseX'));
         blocks.push(block('reportMouseX'));
         blocks.push(watcherToggle('reportMouseY'));
@@ -5478,6 +5341,7 @@ StageMorph.prototype.blockTemplates = function (category) {
 
         blocks.push(block('worldSetBlock'));
         blocks.push(block('worldGetBlock'));
+        blocks.push(block('worldReset'));
 
     }
     return blocks;

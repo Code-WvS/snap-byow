@@ -1,5 +1,8 @@
 
-Snap! Build Your Own Blocks
+Snap! Build Your Own World
+Like Minecraft in Snap!, just better! Snap-BYOW adds a voxel engine.
+
+Based on Snap! Build Your Own Blocks
 
 http://snap.berkeley.edu
 

@@ -632,6 +632,8 @@ SnapTranslator.dict.de = {
         'setze Drehung auf x %n y %n z %n',
     'get rotation':
         'Drehung',
+    'reset world':
+        'setze die Welt zurück',
 
     // BYOW world
     'World':
