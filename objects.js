@@ -4329,15 +4329,15 @@ SpriteMorph.prototype.doScreenshot = function (imgSource, data) {
 };
 
 SpriteMorph.prototype.playerMove = function (deltaX, deltaY, deltaZ) {
-    this.player.yaw.position.x += deltaX;
-    this.player.yaw.position.y += deltaY;
-    this.player.yaw.position.z += deltaZ;
+    this.player.yaw.position.x += deltaX.toFixed(2);
+    this.player.yaw.position.y += deltaY.toFixed(2);
+    this.player.yaw.position.z += deltaZ.toFixed(2);
 };
 
 SpriteMorph.prototype.playerMoveTo = function (posX, posY, posZ) {
-    this.player.yaw.position.x = posX;
-    this.player.yaw.position.y = posY;
-    this.player.yaw.position.z = posZ;
+    this.player.yaw.position.x = posX.toFixed(2);
+    this.player.yaw.position.y = posY.toFixed(2);
+    this.player.yaw.position.z = posZ.toFixed(2);
 };
 
 SpriteMorph.prototype.getPlayerPosition = function () {
