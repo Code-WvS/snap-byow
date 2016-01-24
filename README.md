@@ -1,6 +1,17 @@
 
 Snap! Build Your Own World
-Like Minecraft in Snap!, just better! Snap-BYOW adds a voxel engine.
+Like Minecraft in Snap!, just better! Snap-BYOW adds a voxel engine. [Try it](http://code-wvs.github.io/snap-byow/snap.html)
+
+Notes:
+  * enter interactive mode in full screen stage mode, let your browser capture the mouse
+  * exit interactive mode by pressing escape twice - once to uncapture the mouse, the second time to exit full stage mode
+  * only `world` and `player` categories are modified
+  * `material 0` is air, 1 is grass, 2 are bricks, 3 is earth
+  * modify the player's view and position through the stage
+  * newly created sprites ("mobs") always span at the same point
+  * skin customization is not possible
+  * cloud saving does not work
+
 This project was a weekend project and is not under active development.
 
 Based on [voxel.js](http://voxeljs.com/).
