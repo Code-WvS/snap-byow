@@ -1,6 +1,9 @@
 
 Snap! Build Your Own World
 Like Minecraft in Snap!, just better! Snap-BYOW adds a voxel engine.
+This project was a weekend project and is not under active development.
+
+Based on [voxel.js](http://voxeljs.com/).
 
 Based on Snap! Build Your Own Blocks
 
